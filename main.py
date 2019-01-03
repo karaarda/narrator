@@ -5,6 +5,7 @@ class Narrator:
         self.narrationLines = []
         self.cursorPos = 0
         self.narrationValues = {}
+        self.nestingDegree = 0
 
         self.loadNarration()
         self.loadPreviousState()
@@ -65,6 +66,23 @@ class Narrator:
             self.narrationValues[name] = value
             print(self.narrationValues)
             return 0
+
+        elif currentLine.startswith("IF"):
+            currentLine = currentLine[2:]
+            currentLine = currentLine.strip()
+
+            isPos = currentLine.find("IS")
+
+            leftValue = currentLine[0:isPos].strip()
+            rightValue = currentLine[isPos + 1:].strip()
+
+
+            if leftValue in self.narrationValues and self.narrationValues[leftValue] == rightValue:
+                self.inIfBlock += 1
+                self.cursorPos += 1
+                return 0
+
+
 
         return 0
         #move cursor to the next position and interpret
