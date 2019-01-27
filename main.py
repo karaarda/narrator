@@ -82,11 +82,21 @@ class Narrator:
                 self.cursorPos += 1
                 return 0
             else:
+                for i in range(self.cursorPos, len(self.narrationLines)):
+                    if self.narrationLines[i].startswith("END"):
+                        self.nestingDegree -= 1
+                        #break or pass?
+                    elif self.narrationLines[i].startswith("ELSE"):
+                        self.nestingDegree += 1
                 #try to find ELSE or END
                 #if ELSE found, increase nesting degree
                 #else do nothing.
                 pass
         elif currentLine.startswith("ELSE"):
+
+            for i in range(self.cursorPos, len(self.narrationLines)):
+                if self.narrationLines[i].startswith("END"):
+                    self.nestingDegree -= 1
             #Find corresponding END
             #To do so skip over all lines
             #Find as many ENDs as the number of IF commands found
