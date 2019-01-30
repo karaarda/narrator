@@ -4,6 +4,7 @@ class Narrator:
     def __init__(self):
         self.narrationLines = []
         self.cursorPos = 0
+        self.ENDpos = 0
         self.narrationValues = {}
         self.nestingDegree = 0
 
@@ -50,7 +51,7 @@ class Narrator:
                 if line.strip().startswith("<" + currentLine + ">"):
                     break
                 else:
-                    self.cursorPos += 1
+                    pass
 
             return 0
 
@@ -76,36 +77,44 @@ class Narrator:
             leftValue = currentLine[0:isPos].strip()
             rightValue = currentLine[isPos + 1:].strip()
 
-
             if leftValue in self.narrationValues and self.narrationValues[leftValue] == rightValue:
                 self.nestingDegree += 1
-                self.cursorPos += 1
-                return 0
-            else:
                 for i in range(self.cursorPos, len(self.narrationLines)):
                     if self.narrationLines[i].startswith("END"):
-                        self.nestingDegree -= 1
-                        #break or pass?
-                    elif self.narrationLines[i].startswith("ELSE"):
-                        self.nestingDegree += 1
-                #try to find ELSE or END
-                #if ELSE found, increase nesting degree
-                #else do nothing.
-                pass
+                        self.ENDpos = i
+                        return 0
+            else:
+                dummy_nd = self.nestingDegree + 1  # dummy nesting degree
+                for i in range(self.cursorPos, len(self.narrationLines)):
+                    if self.narrationLines[i].startswith("ELSE"):
+                        self.cursorPos = i - 1  # narrate will increase cursorPos by 1 next time so it will correspond to the line where ELSE is
+                        break
+                    elif self.narrationLines[i].startswith("IF"):  # this line and below is for nested if statements
+                        dummy_nd += 1
+                    elif self.narrationLines[i].startswith("END"):
+                        dummy_nd -= 1
+                        if dummy_nd == self.nestingDegree:
+                            break
+                return 0
+                # ???
+                # try to find ELSE or END
+                # if ELSE found, increase nesting degree
+                # else do nothing.
         elif currentLine.startswith("ELSE"):
 
             for i in range(self.cursorPos, len(self.narrationLines)):
                 if self.narrationLines[i].startswith("END"):
-                    self.nestingDegree -= 1
+                    self.ENDpos = i
             #Find corresponding END
             #To do so skip over all lines
             #Find as many ENDs as the number of IF commands found
-            pass
+            return 0
         elif currentLine.startswith("END"):
+            self.nestingDegree -= 1
             #decrease nesting degree
             pass
 
-        return 0
+            return 0
         #move cursor to the next position and interpret
         #take necessary actions and save the game status
 
