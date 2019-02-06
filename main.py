@@ -1,4 +1,5 @@
 import time
+import re
 
 class Narrator:
     def __init__(self):
@@ -108,6 +109,25 @@ class Narrator:
                     self.cursorPos += 1
 
             return 0
+
+        elif currentLine.startswith("DELAY"):
+            currentLine = currentLine[5:]
+            currentLine = currentLine.strip()
+
+            hour = re.search("([1-9]{1}[0-9]{0,})h", currentLine)
+            minute = re.search("([1-9]{1}[0-9]{0,})m", currentLine)
+            second = re.search("([1-9]{1}[0-9]{0,})s", currentLine)
+
+            delay = 0
+
+            if hour != None:
+                delay += int(hour.group(1)) * 60 * 60
+            if minute != None:
+                delay += int(minute.group(1)) * 60
+            if second != None:
+                delay += int(second.group(1))
+
+            return delay
 
         elif currentLine.startswith("IF"):
             currentLine = currentLine[2:]
