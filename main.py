@@ -69,6 +69,46 @@ class Narrator:
             self.narrationValues[name] = value
             return 0
 
+        elif currentLine.startswith("OPTION"):
+            options = []
+            
+            i = self.cursorPos
+
+            while self.narrationLines[i].strip().startswith("OPTION"):                
+                i += 1
+                
+                spacePos = currentLine.find(" ")
+                separatorPos = currentLine.find("::")
+
+                option = {}
+                option["name"] = currentLine[separatorPos+2:spacePos]
+                option["message"] = currentLine[spacePos+1:]
+
+                options.append(option)
+
+                self.cursorPos += 1
+                currentLine = self.narrationLines[self.cursorPos]
+                currentLine = currentLine.strip()
+
+            for i in range(len(options)):
+                print( i+1 , ". " , options[i]["message"] , sep='')
+
+            userInput = int(input())
+
+            userInput -= 1
+
+            print("<" + options[userInput]["name"].strip() + ">")
+
+            self.cursorPos = 0
+
+            for line in self.narrationLines:
+                if line.strip().startswith("<" + options[userInput]["name"].strip() + ">"):
+                    break
+                else:
+                    self.cursorPos += 1
+
+            return 0
+
         elif currentLine.startswith("IF"):
             currentLine = currentLine[2:]
             currentLine = currentLine.strip()
