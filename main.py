@@ -67,7 +67,6 @@ class Narrator:
             value = currentLine[equalityPos+1:].strip()
 
             self.narrationValues[name] = value
-            print(self.narrationValues)
             return 0
 
         elif currentLine.startswith("IF"):
@@ -77,22 +76,27 @@ class Narrator:
             isPos = currentLine.find("IS")
 
             leftValue = currentLine[0:isPos].strip()
-            rightValue = currentLine[isPos + 1:].strip()
+            rightValue = currentLine[isPos + 2:].strip()
+
+            print("right value: " + rightValue)
+            print("left value: " + self.narrationValues[leftValue])
 
             if leftValue in self.narrationValues and self.narrationValues[leftValue] == rightValue:
                 self.nestingDegree += 1
             else:
                 dummy_nd = 0
 
-                for i in range(self.cursorPos, len(self.narrationLines)):
+                for i in range(self.cursorPos+1, len(self.narrationLines)):
                     if self.narrationLines[i].strip().startswith("END"):
                         if dummy_nd == 0:
+                            self.cursorPos = i
                             break
                         else:
                             dummy_nd = dummy_nd - 1
 
                     elif self.narrationLines[i].strip().startswith("ELSE"):
                         if dummy_nd == 0:
+                            self.cursorPos = i
                             break
 
                     elif self.narrationLines[i].strip().startswith("IF"):
@@ -107,9 +111,10 @@ class Narrator:
 
             dummy_nd = 0
 
-            for i in range(self.cursorPos, len(self.narrationLines)):
+            for i in range(self.cursorPos+1, len(self.narrationLines)):
                 if self.narrationLines[i].strip().startswith("END"):
                     if dummy_nd == 0:
+                        self.cursorPos = i
                         break
                     else:
                         dummy_nd = dummy_nd - 1
