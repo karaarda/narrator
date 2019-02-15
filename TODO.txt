@@ -1,0 +1,15 @@
+TODO:
+-Game save/load
+-Config
+-Change command system
+-Change delay mechanism
+-Change return type
+-Change input mechanism
+-Add narration state
+-Validate narration files
+-Lazy load sections and branches
+-Event system
+
+DONE:
++Sections
++Change current line after each command
