@@ -1,6 +1,5 @@
 TODO:
--Game save/load
--Config
+-Game load
 -Change command system
 -Change delay mechanism
 -Change return type
@@ -9,7 +8,10 @@ TODO:
 -Validate narration files
 -Lazy load sections and branches
 -Event system
+-Ask before showing history
 
 DONE:
 +Sections
 +Change current line after each command
++Config
++Game save

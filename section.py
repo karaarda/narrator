@@ -64,8 +64,12 @@ class Section:
                 options.append(option)
 
                 self.cursorPos += 1
-                currentLine = self.lines[self.cursorPos]
-                currentLine = currentLine.strip()
+
+                if self.cursorPos < len(self.lines):
+                    currentLine = self.lines[self.cursorPos]
+                    currentLine = currentLine.strip()
+                else:
+                    break
 
             for i in range(len(options)):
                 print( i+1 , ". " , options[i]["message"] , sep='')
@@ -74,13 +78,21 @@ class Section:
 
             userInput -= 1
 
-            print("<" + options[userInput]["name"].strip() + ">")
+            narrator.decisions += str(userInput)
+            narrator.save()
+
+            if narrator.config["debug"] == "True":
+                print("<" + options[userInput]["name"].strip() + ">")
 
             narrator.setSection(options[userInput]["name"].strip())
 
             return 0
 
         elif currentLine.startswith("DELAY"):
+
+            if narrator.config["fastForward"] == "True":
+                return 0
+
             currentLine = currentLine[5:]
             currentLine = currentLine.strip()
 

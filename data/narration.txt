@@ -1,75 +1,30 @@
 <initialize>
-PRINT Next line will test variable declarations
-VAR initialized = True
-VAR testedIf = False
-VAR meeting = 10
-GOTO if_test
+VAR toldname=False
+GOTO start
 </>
 
 <start>
-PRINT This is a test script for narrativeScript v0.1
-PRINT Next line will test GO command
-GOTO initialize
+PRINT Hi, can you hear me?
+OPTION::canhear yes
+OPTION::cannothear no
 </>
 
-<if_test>
-PRINT Currently if statements can only make an equality check. Use nested ifs for ANDing. Write the block again with another condition for ORing.
-GOTO if_test_basic
-</>
-
-<if_test_basic>
-IF meeting IS 0
-PRINT nice
+<canhear>
+PRINT I am happy that you can hear me
+IF toldname IS False
+VAR toldname=True
+PRINT My name is Ted
 END
-GOTO if_test_else
+PRINT Can you help me
+OPTION::willhelp I will try my best
+OPTION::wonthelp I am busy, here
 </>
 
-<if_test_else>
-IF meeting IS 10
-PRINT not nice
-ELSE
-PRINT nice
-END
-GOTO if_test_nested
-</>
-
-<if_test_nested>
-IF meeting IS 0
-    IF meeting IS 10
-    PRINT not nice
-    ELSE
-    PRINT nice
-    END
-ELSE
-    IF meeting IS 10
-    PRINT not nice 2
-    ELSE
-    PRINT not nice 3
-    END
-END
-GOTO if_test_goto
-</>
-
-<if_test_goto>
-IF testedIf IS False
-PRINT testing if
-VAR testedIf = True
-GOTO if_test_goto
-ELSE
-GOTO test_option
-END
-</>
-
-<test_option>
-PRINT Next line will test OPTION command. 
-OPTION::negative no
-OPTION::positive yes
-</>
-
-<negative>
-PRINT End of test/negative 
-</>
-
-<positive>
-PRINT End of test/positive
+<cannothear>
+PRINT I wish you could
+PRINT My name is Ted
+VAR toldname=False
+PRINT Cant you still hear me
+OPTION::canhear now I can
+OPTION::stillcannot no I cannot
 </>
