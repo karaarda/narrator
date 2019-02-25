@@ -8,17 +8,28 @@ class Narrator:
         self.config = {}
         self.sections = []
         self.currentSection = None
+        self.sectionToBe = ""
+
+        self.delayData = { "delayed": "False", "target": "None" }
 
         self.narrationValues = {}
         self.decisions = ""
 
-        self.delayed = ""
-        self.destination = ""
-
         self.loadConfig(config)
         self.loadNarration()
+
         self.loadPreviousState()
+
         self.setSection("initialize")
+
+        if self.decisions != "" or self.sectionToBe != "":
+            i = 0
+
+            while i < len(self.decisions) or self.currentSection.title != self.sectionToBe:
+                decisionMade = self.currentSection.fastForward(self, self.decisions[i])
+
+                if decisionMade:
+                    i += 1
 
     def loadConfig(self, config):
         with open(config) as configFile:
@@ -66,12 +77,11 @@ class Narrator:
                 if pair[0] == "decisions":
                     self.decisions = pair[1]
                 elif pair[0] == "delayed":
-                    pass #TODO
-                elif pair[0] == "destination":
-                    pass #TODO destination to go after delay
-
-            if self.decisions != "":
-                pass
+                    self.delayData["delayed"] = pair[1]
+                elif pair[0] == "target":
+                    self.delayData["target"] = pair[1]
+                elif pair[0] == "section":
+                    self.sectionToBe = pair[1]
 
     def save(self, manuel = False):
         if manuel or self.config["autoSave"] == "True":
@@ -79,7 +89,7 @@ class Narrator:
                 saveFile.write("decisions=" + self.decisions + "\n")
                 saveFile.write("section=" + self.currentSection.title + "\n")
                 saveFile.write("delayed=" + self.delayed + "\n")
-                saveFile.write("destination=" + self.destination)
+                saveFile.write("target=" + self.target)
 
     def narrate(self):
         return self.currentSection.narrate(self)

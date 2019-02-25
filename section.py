@@ -1,4 +1,13 @@
+#class Command
+#
+#    def __init__(self, function):
+#        self.function = function
+#
+#    def execute(self, data):
+#        self.function(data)
+
 class Section:
+    
     def __init__(self, title):
         self.title = title
         self.lines = []
@@ -9,6 +18,29 @@ class Section:
         self.cursorPos = 0
         self.nestingDegree = 0
 
+    def fastForward(self, narrator, input):
+        pass
+
+    def command_print(self, narrator, toPrint):
+        print(toPrint)
+
+        self.cursorPos += 1
+
+        return 2
+
+    def command_goto(self, narrator, section):
+        narrator.setSection(section)
+
+        return 0
+
+    def command_var(self, narrator, dataString):
+        data = dataString.split('=')
+        narrator.narrationValues[data[0]] = data[1]
+
+        self.cursorPos += 1
+
+        return 0
+
     def narrate(self, narrator):
 
         currentLine = self.lines[self.cursorPos]
@@ -16,35 +48,13 @@ class Section:
         currentLine = currentLine.strip()
 
         if currentLine.startswith("PRINT"):
-            currentLine = currentLine[5:]
-            currentLine = currentLine.strip()
-            print(currentLine)
+            return command_print(narrator, currentLine[5:].strip())
 
-            self.cursorPos += 1
-
-            return 2
         elif currentLine.startswith("GOTO"):
-            currentLine = currentLine[4:]
-            currentLine = currentLine.strip()
-
-            narrator.setSection(currentLine)
-
-            return 0
+            return command_goto(narrator, currentLine[4:].strip())
 
         elif currentLine.startswith("VAR"):
-            currentLine = currentLine[3:]
-            currentLine = currentLine.strip()
-
-            equalityPos = currentLine.find("=")
-
-            name = currentLine[0:equalityPos].strip()
-            value = currentLine[equalityPos+1:].strip()
-
-            narrator.narrationValues[name] = value
-            
-            self.cursorPos += 1
-            
-            return 0
+            return command_var(narrator, currentLine[3:].strip())
 
         elif currentLine.startswith("OPTION"):
             options = []
