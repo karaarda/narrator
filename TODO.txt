@@ -1,9 +1,7 @@
 TODO:
 -Game load
--Change command system
 -Change delay mechanism
 -Change return type
--Change input mechanism
 -Add narration state
 -Validate narration files
 -Lazy load sections and branches
@@ -15,3 +13,5 @@ DONE:
 +Change current line after each command
 +Config
 +Game save
++Change command system
++Change input mechanism

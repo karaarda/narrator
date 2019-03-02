@@ -21,47 +21,97 @@ class Section:
     def fastForward(self, narrator, input):
         pass
 
-    def command_print(self, narrator, toPrint):
-        print(toPrint)
-
-        self.cursorPos += 1
-
-        return 2
-
-    def command_goto(self, narrator, section):
-        narrator.setSection(section)
-
-        return 0
-
-    def command_var(self, narrator, dataString):
-        data = dataString.split('=')
-        narrator.narrationValues[data[0]] = data[1]
-
-        self.cursorPos += 1
-
-        return 0
-
     def narrate(self, narrator):
 
         currentLine = self.lines[self.cursorPos]
 
-        currentLine = currentLine.strip()
+        command = None
 
         if currentLine.startswith("PRINT"):
-            return command_print(narrator, currentLine[5:].strip())
+            command = self.command_print(narrator, currentLine[5:].strip())
 
         elif currentLine.startswith("GOTO"):
-            return command_goto(narrator, currentLine[4:].strip())
+            command = self.command_goto(narrator, currentLine[4:].strip())
 
         elif currentLine.startswith("VAR"):
-            return command_var(narrator, currentLine[3:].strip())
+            command = self.command_var(narrator, currentLine[3:].strip())
 
         elif currentLine.startswith("OPTION"):
+            command = self.command_option(narrator, currentLine)
+
+        elif currentLine.startswith("DELAY"):
+
+            if narrator.config["fastForward"] == "True":
+                pass #return fastForward command
+
+            command = self.command_delay(narrator, currentLine[5:].strip())
+
+        elif currentLine.startswith("IF"):
+            command = self.command_if(narrator, currentLine[2:].strip())
+
+        elif currentLine.startswith("ELSE"):
+            command = self.command_else(narrator)
+
+        elif currentLine.startswith("END"):
+            command = self.command_end(narrator)
+
+        return command
+
+    def get_action(self, command):
+        pass
+
+    def command_print(self, narrator, toPrint):
+        def command():
+            nonlocal self
+            nonlocal narrator
+            nonlocal toPrint
+
+            print(toPrint)
+
+            self.cursorPos += 1
+            
+            return 2
+
+        return command
+
+    def command_goto(self, narrator, section):
+        def command():
+            nonlocal self
+            nonlocal narrator
+            nonlocal section
+            
+            narrator.setSection(section)
+
+            return 0
+
+        return command
+
+    def command_var(self, narrator, dataString):
+        def command():
+            nonlocal self
+            nonlocal narrator
+            nonlocal dataString
+
+            data = dataString.split('=')
+            narrator.narrationValues[data[0].strip()] = data[1].strip()
+
+            self.cursorPos += 1
+            
+            return 0
+
+        return command
+
+    def command_option(self, narrator, currentLine):
+        def command():
+            nonlocal self
+            nonlocal narrator
+            nonlocal currentLine
+
             options = []
             
             i = self.cursorPos
 
-            while self.lines[i].strip().startswith("OPTION"):                
+            while self.lines[i].startswith("OPTION"):                
                 i += 1
                 
                 spacePos = currentLine.find(" ")
@@ -77,38 +127,33 @@ class Section:
 
                 if self.cursorPos < len(self.lines):
                     currentLine = self.lines[self.cursorPos]
-                    currentLine = currentLine.strip()
                 else:
                     break
 
-            for i in range(len(options)):
-                print( i+1 , ". " , options[i]["message"] , sep='')
+            def onInput(userInput):
+                narrator.setSection(options[userInput]["name"].strip())
 
-            userInput = int(input())
+                narrator.decisions += str(userInput)
+                narrator.save()
 
-            userInput -= 1
+                if narrator.config["debug"] == "True":
+                    print("<" + options[userInput]["name"].strip() + ">")
 
-            narrator.decisions += str(userInput)
-            narrator.save()
-
-            if narrator.config["debug"] == "True":
-                print("<" + options[userInput]["name"].strip() + ">")
-
-            narrator.setSection(options[userInput]["name"].strip())
+            narrator.requestInput( options, onInput)
 
             return 0
 
-        elif currentLine.startswith("DELAY"):
+        return command
 
-            if narrator.config["fastForward"] == "True":
-                return 0
+    def command_delay(self, narrator, timeString):
+        def command():
+            nonlocal self
+            nonlocal narrator
+            nonlocal timeString
 
-            currentLine = currentLine[5:]
-            currentLine = currentLine.strip()
-
-            hour = re.search("([1-9]{1}[0-9]{0,})h", currentLine)
-            minute = re.search("([1-9]{1}[0-9]{0,})m", currentLine)
-            second = re.search("([1-9]{1}[0-9]{0,})s", currentLine)
+            hour = re.search("([1-9]{1}[0-9]{0,})h", timeString)
+            minute = re.search("([1-9]{1}[0-9]{0,})m", timeString)
+            second = re.search("([1-9]{1}[0-9]{0,})s", timeString)
 
             delay = 0
 
@@ -121,19 +166,24 @@ class Section:
 
             self.cursorPos += 1
 
-            return delay
+            return 0
 
-        elif currentLine.startswith("IF"):
-            currentLine = currentLine[2:]
-            currentLine = currentLine.strip()
+        return command
 
-            isPos = currentLine.find("IS")
+    def command_if(self, narrator, condition):
+        def command():
+            nonlocal self
+            nonlocal narrator
+            nonlocal condition
 
-            leftValue = currentLine[0:isPos].strip()
-            rightValue = currentLine[isPos + 2:].strip()
+            conditionTokens = condition.split("IS")
 
-            print("right value: " + rightValue)
-            print("left value: " + narrator.narrationValues[leftValue])
+            leftValue = conditionTokens[0]
+            rightValue = conditionTokens[1]
+
+            if narrator.config["debug"] == "True":
+                print("right value: " + rightValue)
+                print("left value: " + narrator.narrationValues[leftValue])
 
             if leftValue in narrator.narrationValues and narrator.narrationValues[leftValue] == rightValue:
                 self.nestingDegree += 1
@@ -141,19 +191,19 @@ class Section:
                 dummy_nd = 0
 
                 for i in range(self.cursorPos+1, len(self.lines)):
-                    if self.lines[i].strip().startswith("END"):
+                    if self.lines[i].startswith("END"):
                         if dummy_nd == 0:
                             self.cursorPos = i
                             break
                         else:
                             dummy_nd = dummy_nd - 1
 
-                    elif self.lines[i].strip().startswith("ELSE"):
+                    elif self.lines[i].startswith("ELSE"):
                         if dummy_nd == 0:
                             self.cursorPos = i
                             break
 
-                    elif self.lines[i].strip().startswith("IF"):
+                    elif self.lines[i].startswith("IF"):
                         dummy_nd = dummy_nd + 1
                 # ???
                 # try to find ELSE or END
@@ -162,19 +212,25 @@ class Section:
 
             self.cursorPos += 1
 
-            return self.narrate(narrator)
-        elif currentLine.startswith("ELSE"):
+            return self.narrate(narrator)()
+
+        return command
+
+    def command_else(self, narrator):
+        def command():
+            nonlocal self
+            nonlocal narrator
 
             dummy_nd = 0
 
             for i in range(self.cursorPos+1, len(self.lines)):
-                if self.lines[i].strip().startswith("END"):
+                if self.lines[i].startswith("END"):
                     if dummy_nd == 0:
                         self.cursorPos = i
                         break
                     else:
                         dummy_nd = dummy_nd - 1
-                if self.lines[i].strip().startswith("IF"):
+                if self.lines[i].startswith("IF"):
                     dummy_nd = dummy_nd + 1
 
             #Find corresponding END
@@ -184,12 +240,17 @@ class Section:
             self.cursorPos += 1
 
             return 0
-        elif currentLine.startswith("END"):
+        return command
+
+    def command_end(self, narrator):
+        def command():
+            nonlocal self
+            nonlocal narrator
+
             self.nestingDegree -= 1
             #decrease nesting degree
-    
+
             self.cursorPos += 1
 
             return 0
-        #move cursor to the next position and interpret
-        #take necessary actions and save the game status
+        return command

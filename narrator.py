@@ -5,6 +5,8 @@ from section import Section
 
 class Narrator:
     def __init__(self, config="default.conf"):
+    #####
+    # Member Variables
         self.config = {}
         self.sections = []
         self.currentSection = None
@@ -14,22 +16,34 @@ class Narrator:
 
         self.narrationValues = {}
         self.decisions = ""
+    # Listeners
+        self.onInputListener = None
+    #
+    #####
 
+    #####
+    # Load config and preivous state
         self.loadConfig(config)
         self.loadNarration()
 
         self.loadPreviousState()
+    #
+    #####
 
         self.setSection("initialize")
 
-        if self.decisions != "" or self.sectionToBe != "":
-            i = 0
+    #####
+    # Fast-Forward to previous position
+        # if self.decisions != "" or self.sectionToBe != "":
+        #     i = 0
 
-            while i < len(self.decisions) or self.currentSection.title != self.sectionToBe:
-                decisionMade = self.currentSection.fastForward(self, self.decisions[i])
+        #     while i < len(self.decisions) or self.currentSection.title != self.sectionToBe:
+        #         decisionMade = self.currentSection.fastForward(self, self.decisions[i])
 
-                if decisionMade:
-                    i += 1
+        #         if decisionMade:
+        #             i += 1
+    #
+    #####
 
     def loadConfig(self, config):
         with open(config) as configFile:
@@ -55,7 +69,7 @@ class Narrator:
                     self.sections.append(currentSection)
 
                 else:
-                    currentSection.lines.append(line)
+                    currentSection.lines.append(line.strip())
 
     def setSection(self, sectionTitle):
         for section in self.sections:
@@ -65,7 +79,6 @@ class Narrator:
                 break
 
         self.save()
-
 
     def loadPreviousState(self):
         #reload previous state of the narrative
@@ -88,11 +101,15 @@ class Narrator:
             with open(self.config["savePath"], 'w+') as saveFile:
                 saveFile.write("decisions=" + self.decisions + "\n")
                 saveFile.write("section=" + self.currentSection.title + "\n")
-                saveFile.write("delayed=" + self.delayed + "\n")
-                saveFile.write("target=" + self.target)
+                saveFile.write("delayed=" + self.delayData["delayed"] + "\n")
+                saveFile.write("target=" + self.delayData["target"])
 
     def narrate(self):
         return self.currentSection.narrate(self)
 
-    def okay(self):        
+    def requestInput(self, optionData, onInput):
+        if( self.onInputListener != None ):
+            self.onInputListener(optionData, onInput)
+
+    def okay(self):
         return True
