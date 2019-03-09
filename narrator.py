@@ -18,21 +18,27 @@ class Narrator:
         self.decisions = ""
     # Listeners
         self.onInputListener = None
+        self.loadGameListener = None
     #
     #####
 
     #####
-    # Load config and preivous state
+    # Load config and previous state
         self.loadConfig(config)
         self.loadNarration()
 
-        self.loadPreviousState()
+        self.loadPreviousState()        
     #
     #####
 
         self.setSection("initialize")
 
     #####
+
+        self.bilmiyorum()
+
+    
+
     # Fast-Forward to previous position
         # if self.decisions != "" or self.sectionToBe != "":
         #     i = 0
@@ -44,6 +50,14 @@ class Narrator:
         #             i += 1
     #
     #####
+
+    def onInputLoad(self, userInputLoad):
+        print('LOLOLOLOLOLOL')
+        if userInputLoad == 1:
+            self.fastForward()
+
+    def bilmiyorum(self):
+        self.loadGameListener(onInputLoad)
 
     def loadConfig(self, config):
         with open(config) as configFile:
@@ -111,5 +125,11 @@ class Narrator:
         if( self.onInputListener != None ):
             self.onInputListener(optionData, onInput)
 
+        
+    
+
+    def fastForward(self):
+        print('of')    
+    
     def okay(self):
         return True
