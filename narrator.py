@@ -16,29 +16,29 @@ class Narrator:
 
         self.narrationValues = {}
         self.decisions = ""
+    # Load Config
+        self.loadConfig(config)
     # Listeners
         self.onInputListener = None
-        self.loadGameListener = None
+        self.onGameLoadedListener = self.fastForward
     #
     #####
 
+    def start(self):
+        
     #####
-    # Load config and previous state
-        self.loadConfig(config)
+    # Load narration and previous state
         self.loadNarration()
-
-        self.loadPreviousState()        
+        self.loadPreviousState()
     #
     #####
-
-        self.setSection("initialize")
+        if self.sectionToBe != "" and self.onGameLoadedListener != None:
+            self.onGameLoadedListener()
+        else:
+            self.startNewNarrative()
 
     #####
-
-        self.bilmiyorum()
-
-    
-
+  
     # Fast-Forward to previous position
         # if self.decisions != "" or self.sectionToBe != "":
         #     i = 0
@@ -51,13 +51,13 @@ class Narrator:
     #
     #####
 
-    def onInputLoad(self, userInputLoad):
-        print('LOLOLOLOLOLOL')
-        if userInputLoad == 1:
-            self.fastForward()
-
-    def bilmiyorum(self):
-        self.loadGameListener(onInputLoad)
+    def startNewNarrative(self):
+        self.decisions = ""
+        self.delayData["delayed"] = "False"
+        self.delayData["target"] = "None"
+        self.sectionToBe = ""
+        
+        self.setSection("initialize")
 
     def loadConfig(self, config):
         with open(config) as configFile:
@@ -96,10 +96,10 @@ class Narrator:
 
     def loadPreviousState(self):
         #reload previous state of the narrative
-        with open(self.config["savePath"], 'a+') as saveFile:
+        with open(self.config["savePath"], 'r+') as saveFile:
 
             for line in saveFile:
-                pair = line.split("=")
+                pair = line.strip().split("=")
                 
                 if pair[0] == "decisions":
                     self.decisions = pair[1]
@@ -125,11 +125,8 @@ class Narrator:
         if( self.onInputListener != None ):
             self.onInputListener(optionData, onInput)
 
-        
-    
-
     def fastForward(self):
-        print('of')    
-    
+        pass #TODO fast forward to last position
+
     def okay(self):
         return True

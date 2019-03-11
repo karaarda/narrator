@@ -1,4 +1,4 @@
-decisions=0
-section=negative
+decisions=
+section=if_test_nested
 delayed=False
 target=None

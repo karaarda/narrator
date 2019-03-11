@@ -22,19 +22,24 @@ def onInputListener(options, onInput):
 
     onInput(userInput)
     
-def loadGameListener(onInputLoad):
+def onGameLoadedListener():
 
     print('Do you want to load the previously saved game?\n0.No\n1.Yes')
 
     userInputLoad = int(input())
 
-    onInputLoad(userInputLoad)
+    if userInputLoad == 0:
+        narrator.startNewNarrative()
+    else:
+        narrator.fastForward()
 
 if __name__ == "__main__":
     global narrator 
     narrator = Narrator()
     narrator.onInputListener = onInputListener
-    narrator.loadGameListener = loadGameListener
+    narrator.onGameLoadedListener = onGameLoadedListener
+
+    narrator.start()
 
     global end
     end = False
