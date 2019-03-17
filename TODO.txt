@@ -5,7 +5,6 @@ TODO:
 -Add narration state
 -Validate narration files
 -Lazy load sections and branches
--Event system
 -Ask before showing history
 -Language support
 -Data files
@@ -20,3 +19,4 @@ DONE:
 +Game save
 +Change command system
 +Change input mechanism
++Event system

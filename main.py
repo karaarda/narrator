@@ -4,14 +4,20 @@ from narrator import Narrator
 
 def main():
     global narrator
+    narrator = Narrator()
+    narrator.eventHandler.subscribe("inputRequest", onInputListener)
+    narrator.eventHandler.subscribe("gameLoaded", onGameLoadedListener)
+    narrator.eventHandler.subscribe("narratorReady", onReadyListener)
+    narrator.eventHandler.subscribe("newCommand", onNewCommandListener);
 
-    if not narrator.okay():
-        #TODO show error message
-        exit()
+    narrator.start()
 
-    while not end:
-        delay = narrator.narrate()()
-        time.sleep(delay)
+def onReadyListener():
+    narrator.narrate()
+
+def onNewCommandListener(data):
+    data["command"]()
+    narrator.narrate()
 
 def onInputListener(options, onInput):
 
@@ -34,14 +40,4 @@ def onGameLoadedListener():
         narrator.fastForward()
 
 if __name__ == "__main__":
-    global narrator 
-    narrator = Narrator()
-    narrator.eventHandler.subscribe("onInput", onInputListener)
-    narrator.eventHandler.subscribe("onGameLoaded", onGameLoadedListener)
-
-    narrator.start()
-
-    global end
-    end = False
-
     main()

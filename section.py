@@ -1,10 +1,4 @@
-#class Command
-#
-#    def __init__(self, function):
-#        self.function = function
-#
-#    def execute(self, data):
-#        self.function(data)
+import re
 
 class Section:
     

@@ -21,7 +21,7 @@ class Narrator:
         self.loadConfig(config)
     # Event System
         self.eventHandler = EventHandler()
-        self.eventHandler.subscribe("onGameLoaded", self.fastForward)
+        self.eventHandler.subscribe("gameLoaded", self.fastForward)
     #
     #####
 
@@ -33,7 +33,7 @@ class Narrator:
         self.loadPreviousState()
     #
     #####
-        if self.sectionToBe == "" or not self.eventHandler.fireEvent("onGameLoaded"):
+        if self.sectionToBe == "" or not self.eventHandler.fireEvent("gameLoaded"):
             self.startNewNarrative()
 
     #####
@@ -121,7 +121,7 @@ class Narrator:
         return self.currentSection.narrate(self)
 
     def requestInput(self, optionData, onInput):
-        self.eventHandler.fireEvent("onInput", {"options": optionData, "callback": onInput})
+        self.eventHandler.fireEvent("inputRequest", {"options": optionData, "callback": onInput})
 
     def fastForward(self):
         pass #TODO fast forward to last position
