@@ -36,8 +36,8 @@ def onGameLoadedListener():
 if __name__ == "__main__":
     global narrator 
     narrator = Narrator()
-    narrator.onInputListener = onInputListener
-    narrator.onGameLoadedListener = onGameLoadedListener
+    narrator.eventHandler.subscribe("onInput", onInputListener)
+    narrator.eventHandler.subscribe("onGameLoaded", onGameLoadedListener)
 
     narrator.start()
 

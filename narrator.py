@@ -2,6 +2,7 @@ import time
 import re
 
 from section import Section
+from eventSystem import EventHandler
 
 class Narrator:
     def __init__(self, config="default.conf"):
@@ -18,9 +19,9 @@ class Narrator:
         self.decisions = ""
     # Load Config
         self.loadConfig(config)
-    # Listeners
-        self.onInputListener = None
-        self.onGameLoadedListener = self.fastForward
+    # Event System
+        self.eventHandler = EventHandler()
+        self.eventHandler.subscribe("onGameLoaded", self.fastForward)
     #
     #####
 
@@ -32,9 +33,7 @@ class Narrator:
         self.loadPreviousState()
     #
     #####
-        if self.sectionToBe != "" and self.onGameLoadedListener != None:
-            self.onGameLoadedListener()
-        else:
+        if self.sectionToBe == "" or not self.eventHandler.fireEvent("onGameLoaded"):
             self.startNewNarrative()
 
     #####
@@ -122,8 +121,7 @@ class Narrator:
         return self.currentSection.narrate(self)
 
     def requestInput(self, optionData, onInput):
-        if( self.onInputListener != None ):
-            self.onInputListener(optionData, onInput)
+        self.eventHandler.fireEvent("onInput", {"options": optionData, "callback": onInput})
 
     def fastForward(self):
         pass #TODO fast forward to last position
