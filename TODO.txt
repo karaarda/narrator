@@ -7,6 +7,11 @@ TODO:
 -Lazy load sections and branches
 -Event system
 -Ask before showing history
+-Language support
+-Data files
+-Importing other files
+-Data sets
+-Mathematical expressions
 
 DONE:
 +Sections
