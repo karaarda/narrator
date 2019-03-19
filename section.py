@@ -49,7 +49,7 @@ class Section:
         elif currentLine.startswith("END"):
             command = self.command_end(narrator)
 
-        return command
+        narrator.eventHandler.fireEvent("newCommand", {"command": command})
 
     def get_action(self, command):
         pass

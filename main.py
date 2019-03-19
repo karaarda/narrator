@@ -6,29 +6,29 @@ def main():
     global narrator
     narrator = Narrator()
     narrator.eventHandler.subscribe("inputRequest", onInputListener)
-    narrator.eventHandler.subscribe("gameLoaded", onGameLoadedListener)
+    narrator.eventHandler.override("gameLoaded", onGameLoadedListener)
     narrator.eventHandler.subscribe("narratorReady", onReadyListener)
     narrator.eventHandler.subscribe("newCommand", onNewCommandListener);
 
     narrator.start()
 
-def onReadyListener():
+def onReadyListener(data):
     narrator.narrate()
 
 def onNewCommandListener(data):
     data["command"]()
     narrator.narrate()
 
-def onInputListener(options, onInput):
+def onInputListener(data):
 
-    for i in range(len(options)):
-        print( i, ". " , options[i]["message"] , sep='')
+    for i in range(len(data["options"])):
+        print( i, ". " , data["options"][i]["message"] , sep='')
 
     userInput = int(input())
 
-    onInput(userInput)
+    data["onInput"](userInput)
     
-def onGameLoadedListener():
+def onGameLoadedListener(data):
 
     print('Do you want to load the previously saved game?\n0.No\n1.Yes')
 

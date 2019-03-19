@@ -14,11 +14,14 @@ class EventHandler:
 
     def subscribe(self, tag, listener):
         if not tag in self.listeners:
-            self.listeners[tag] = []
+            self.listeners[tag] = [listener]
         
-        if not listener in self.listeners[tag]:
+        elif not listener in self.listeners[tag]:
             self.listeners[tag].append(listener)
 
     def unsubscribe(self, tag, listener):
         if tag in self.listeners and listener in self.listeners[tag]:
             self.listeners[tag].remove(listener)
+
+    def override(self, tag, listener):
+        self.listeners[tag] = [listener]

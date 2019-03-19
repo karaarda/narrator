@@ -49,6 +49,8 @@ class Narrator:
         #             i += 1
     #
     #####
+        self.eventHandler.fireEvent("narratorReady")
+
 
     def startNewNarrative(self):
         self.decisions = ""
@@ -123,7 +125,7 @@ class Narrator:
     def requestInput(self, optionData, onInput):
         self.eventHandler.fireEvent("inputRequest", {"options": optionData, "callback": onInput})
 
-    def fastForward(self):
+    def fastForward(self, data):
         pass #TODO fast forward to last position
 
     def okay(self):
