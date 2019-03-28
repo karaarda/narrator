@@ -1,17 +1,20 @@
+import threading
+
 class EventHandler:
     def __init__(self):
         self.eventConfigs = {}
         self.listeners = {}
-        self.eventQueue = {}
-        #TODO add scheduler
 
-    def fireEvent(self, tag, data = {}):
+    def __fireEvent(self, tag, data = {}):
         if tag in self.listeners:
             for listener in self.listeners[tag]:
                 listener(data)
                 return True
         
         return False
+
+    def scheduleEvent(self, tag, data = {}, delay = 0):
+        threading.Timer(delay, self.__fireEvent, kwargs={'tag': tag, 'data': data}).start()
 
     def subscribe(self, tag, listener):
         if not tag in self.listeners:

@@ -8,16 +8,19 @@ def main():
     narrator.eventHandler.subscribe("inputRequest", onInputListener)
     narrator.eventHandler.subscribe("gameLoaded", onGameLoadedListener)
     narrator.eventHandler.subscribe("narratorReady", onReadyListener)
-    narrator.eventHandler.subscribe("newCommand", onNewCommandListener);
+    narrator.eventHandler.subscribe("step", onNarrationStepListener)
+    narrator.eventHandler.subscribe("print", onPrintListener)
 
     narrator.start()
 
 def onReadyListener(data):
     narrator.narrate()
 
-def onNewCommandListener(data):
-    data["command"]()
+def onNarrationStepListener(data):
     narrator.narrate()
+
+def onPrintListener(data):
+    print (data['message'])
 
 def onInputListener(data):
 
