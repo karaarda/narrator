@@ -13,6 +13,9 @@ def main():
 
     narrator.start()
 
+    while narrator.alive:
+        pass
+
 def onReadyListener(data):
     narrator.narrate()
 
@@ -21,6 +24,7 @@ def onNarrationStepListener(data):
 
 def onPrintListener(data):
     print (data['message'])
+    narrator.narrate()
 
 def onInputListener(data):
 

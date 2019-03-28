@@ -33,10 +33,7 @@ class Section:
             self.command_option(narrator, currentLine)
 
         elif currentLine.startswith("DELAY"):
-            delay = self.command_delay(narrator, currentLine[5:].strip())
-
-            if narrator.config["fastForward"] == "True":
-                delay = 0
+            self.command_delay(narrator, currentLine[5:].strip())
 
         elif currentLine.startswith("IF"):
             self.command_if(narrator, currentLine[2:].strip())
@@ -47,27 +44,26 @@ class Section:
         elif currentLine.startswith("END"):
             self.command_end(narrator)
 
-        if delay == 0:
-            narrator.eventHandler.scheduleEvent("step")
-        else:
-            narrator.eventHandler.scheduleEvent("step", delay=delay)
-
     def get_action(self, command):
         pass
 
     def command_print(self, narrator, toPrint):
-        narrator.eventHandler.scheduleEvent("print", {"message": toPrint})
-
         self.cursorPos += 1
+
+        narrator.eventHandler.scheduleEvent("print", {"message": toPrint})
 
     def command_goto(self, narrator, section):
         narrator.setSection(section)
+        
+        narrator.eventHandler.scheduleEvent("step")
 
     def command_var(self, narrator, dataString):
         data = dataString.split('=')
         narrator.narrationValues[data[0].strip()] = data[1].strip()
 
         self.cursorPos += 1
+        
+        narrator.eventHandler.scheduleEvent("step")
 
     def command_option(self, narrator, currentLine):
         options = []
@@ -105,6 +101,11 @@ class Section:
         narrator.requestInput( options, onInput)
 
     def command_delay(self, narrator, timeString): 
+        
+        if narrator.config["fastForward"] == "True":
+            narrator.eventHandler.scheduleEvent("step")
+            return
+        
         hour = re.search("([1-9]{1}[0-9]{0,})h", timeString)
         minute = re.search("([1-9]{1}[0-9]{0,})m", timeString)
         second = re.search("([1-9]{1}[0-9]{0,})s", timeString)
@@ -119,6 +120,8 @@ class Section:
             delay += int(second.group(1))
 
             self.cursorPos += 1
+        
+        narrator.eventHandler.scheduleEvent("step", delay=delay)
 
     def command_if(self, narrator, condition):
         conditionTokens = condition.split("IS")
@@ -157,7 +160,7 @@ class Section:
 
         self.cursorPos += 1
 
-        return self.narrate(narrator)
+        self.narrate(narrator)
 
     def command_else(self, narrator):
         dummy_nd = 0
@@ -177,9 +180,13 @@ class Section:
         #Find as many ENDs as the number of IF commands found
 
         self.cursorPos += 1
+        
+        narrator.eventHandler.scheduleEvent("step")
 
     def command_end(self, narrator):
         self.nestingDegree -= 1
         #decrease nesting degree
 
         self.cursorPos += 1
+        
+        narrator.eventHandler.scheduleEvent("step")

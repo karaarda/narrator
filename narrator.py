@@ -32,34 +32,14 @@ class Narrator:
     #####
 
     def start(self):
-        
-    #####
-    # Load narration and previous state
         self.loadNarration()
         self.loadPreviousState()
-    #
-    #####
-        if self.sectionToBe == "" or not self.eventHandler.scheduleEvent("gameLoaded"):
-            self.startNewNarrative()
-
-    #####
-  
-
-    # Fast-Forward to previous position
-        # if self.decisions != "" or self.sectionToBe != "":
-        #     i = 0
-
-        #     while i < len(self.decisions) or self.currentSection.title != self.sectionToBe:
-        #         decisionMade = self.currentSection.fastForward(self, self.decisions[i])
-
-        #         if decisionMade:
-        #             i += 1
-    #
-    #####
-
         self.alive = True
-        self.eventHandler.scheduleEvent("narratorReady")
 
+        if self.sectionToBe == "":
+            self.startNewNarrative()
+        else:
+            self.eventHandler.scheduleEvent("gameLoaded")
 
     def startNewNarrative(self):
         self.decisions = ""
@@ -68,6 +48,8 @@ class Narrator:
         self.sectionToBe = ""
         
         self.setSection("initialize")
+
+        self.eventHandler.scheduleEvent("narratorReady")
 
     def loadConfig(self, config):
         with open(config) as configFile:
