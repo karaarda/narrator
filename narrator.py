@@ -2,7 +2,7 @@ import time
 import re
 
 from section import Section
-from eventSystem import EventHandler
+from eventSystem import EventHandler, EventConfig
 
 class Narrator:
     def __init__(self, config="default.conf"):
@@ -22,6 +22,11 @@ class Narrator:
     # Event System
         self.eventHandler = EventHandler()
         self.eventHandler.subscribe("gameLoaded", self.fastForward)
+
+        self.eventHandler.configureEvent("inputRequest", EventConfig.INSTANT)
+        self.eventHandler.configureEvent("gameLoaded", EventConfig.INSTANT | EventConfig.SINGLE)
+        self.eventHandler.configureEvent("narratorReady", EventConfig.INSTANT)
+        self.eventHandler.configureEvent("newCommand", EventConfig.INSTANT)
     #
     #####
 

@@ -6,7 +6,7 @@ def main():
     global narrator
     narrator = Narrator()
     narrator.eventHandler.subscribe("inputRequest", onInputListener)
-    narrator.eventHandler.override("gameLoaded", onGameLoadedListener)
+    narrator.eventHandler.subscribe("gameLoaded", onGameLoadedListener)
     narrator.eventHandler.subscribe("narratorReady", onReadyListener)
     narrator.eventHandler.subscribe("newCommand", onNewCommandListener);
 
